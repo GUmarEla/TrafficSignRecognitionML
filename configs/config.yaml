@@ -1,0 +1,79 @@
+# Data paths
+data:
+  kaggle_dataset: "https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign"
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  train_csv: "data/raw/Train.csv"
+  test_csv: "data/raw/Test.csv"
+  train_features: "data/meta/train_features.npz"
+  test_features: "data/meta/test_features.npz"
+
+# Model parameters
+model:
+  name: "RandomForest"
+  n_estimators: 200
+  max_depth: null
+  min_samples_split: 2
+  save_path: "models/traffic_sign_model.pkl"
+
+# Feature extraction parameters
+features:
+  image_size: [64, 64]
+  hog:
+    orientations: 9
+    pixels_per_cell: [8, 8]
+    cells_per_block: [2, 2]
+  lbp:
+    radius: 3
+    n_points: 24
+  color:
+    n_bins: 32
+```
+
+---
+
+### **STEP 5: Create Other Essential Files**
+
+#### **`requirements.txt`**
+```
+numpy>=1.21.0
+opencv-python>=4.5.0
+scikit-image>=0.18.0
+scikit-learn>=1.0.0
+pandas>=1.3.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
+tqdm>=4.62.0
+PyYAML>=5.4.0
+opendatasets>=0.1.22
+```
+
+---
+
+#### **`.gitignore`**
+```
+# Data
+data/raw/
+data/processed/
+data/meta/*.npz
+
+# Models
+models/*.pkl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environments
+venv/
+env/
+.venv/
+
+# Kaggle credentials
+kaggle.json
