@@ -1,59 +1,112 @@
 """
-Utility functions
+Utility functions for dataset loading and processing
 """
-import yaml
-import numpy as np
-import pickle
 import os
+import cv2
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+from typing import Tuple, List
 
-def load_config(config_path: str) -> dict:
-    """Load configuration from YAML file"""
-    with open(config_path, 'r') as f:
-        config = yaml.safe_load(f)
-    return config
-
-
-def save_features(features: np.ndarray, labels: np.ndarray, output_path: str):
-    """Save features and labels to .npz file"""
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    np.savez(output_path, features=features, labels=labels)
-    print(f"Saved features to {output_path}")
+from src.preprocessing import preprocess_image
+from src.features import feature_extraction
 
 
-def load_features(features_path: str) -> tuple:
-    """Load features and labels from .npz file"""
-    data = np.load(features_path)
-    return data['features'], data['labels']
-
-
-def save_model(model, scaler, model_path: str):
-    """Save trained model and scaler"""
-    os.makedirs(os.path.dirname(model_path), exist_ok=True)
-    
-    with open(model_path, 'wb') as f:
-        pickle.dump({'model': model, 'scaler': scaler}, f)
-    
-    print(f"Saved model to {model_path}")
-
-
-def load_model(model_path: str):
-    """Load trained model and scaler"""
-    with open(model_path, 'rb') as f:
-        data = pickle.load(f)
-    
-    return data['model'], data['scaler']
-
-
-def download_dataset_from_kaggle(dataset_name: str, output_dir: str):
+def load_and_process_dataset(
+    csv_path: str, 
+    image_folder: str
+) -> Tuple[np.ndarray, np.ndarray, List[str]]:
     """
-    Download dataset from Kaggle using opendatasets
+    Load images from CSV and extract features
     
     Args:
-        dataset_name: Kaggle dataset URL or name
-        output_dir: Where to save the dataset
+        csv_path: Path to CSV file containing image paths and labels
+        image_folder: Root folder containing images
+        
+    Returns:
+        features: Array of feature vectors (n_samples, n_features)
+        labels: Array of class labels (n_samples,)
+        failed_images: List of images that failed to process
     """
-    import opendatasets as od
+    # Load CSV
+    df = pd.read_csv(csv_path)
+    print(f"Loaded {len(df)} samples from {csv_path}")
+
+    features_list = []
+    labels_list = []
+    failed_images = []
+
+    # Process each image
+    for idx, row in tqdm(df.iterrows(), total=len(df), desc="Processing images"):
+        try:
+            # Construct image path
+            img_path = os.path.join(image_folder, row['Path'])
+            
+            # Load image
+            image = cv2.imread(img_path)
+
+            if image is None:
+                failed_images.append(img_path)
+                continue
+
+            # Preprocess image
+            processed = preprocess_image(image)
+
+            # Extract features
+            features = feature_extraction(processed)
+
+            # Store results
+            features_list.append(features)
+            labels_list.append(row['ClassId'])
+
+        except Exception as e:
+            failed_images.append(f"{img_path}: {str(e)}")
+            continue
+
+    # Summary
+    print(f"Successfully processed: {len(features_list)}")
+    print(f"Failed: {len(failed_images)}")
+
+    if len(features_list) == 0:
+        raise ValueError("No images were successfully processed!")
+
+    # Convert to numpy arrays
+    features = np.array(features_list)
+    labels = np.array(labels_list)
+
+    return features, labels, failed_images
+
+
+def save_processed_data(
+    features: np.ndarray, 
+    labels: np.ndarray, 
+    output_path: str
+) -> None:
+    """
+    Save processed features and labels to disk
     
-    print(f"Downloading dataset from Kaggle...")
-    od.download(dataset_name, data_dir=output_dir)
-    print(f"Dataset downloaded to {output_dir}")
+    Args:
+        features: Feature array
+        labels: Label array
+        output_path: Path to save .npz file
+    """
+    np.savez(output_path, features=features, labels=labels)
+    print(f"Saved processed data to {output_path}")
+
+
+def load_processed_data(input_path: str) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Load previously processed features and labels
+    
+    Args:
+        input_path: Path to .npz file
+        
+    Returns:
+        features: Feature array
+        labels: Label array
+    """
+    data = np.load(input_path)
+    features = data['features']
+    labels = data['labels']
+    print(f"Loaded processed data from {input_path}")
+    return features, labels

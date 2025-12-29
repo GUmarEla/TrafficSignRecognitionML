@@ -1,30 +1,24 @@
 """
-Traffic Sign Recognition Package
+German Traffic Sign Recognition Benchmark (GTSRB)
+Traffic sign classification using traditional ML features
 """
-from .preprocessing import image_pipeline, load_and_preprocess_dataset
-from .features import feature_extraction, extract_features_from_images
-from .train import train_model
-from .evaluate import evaluate_model
-from .utils import (
-    load_config,
-    save_features,
-    load_features,
-    save_model,
-    load_model,
-    download_dataset_from_kaggle
-)
+
+from src.preprocessing import preprocess_image, image_pipeline_minimal
+from src.features import feature_extraction
+from src.utils import load_and_process_dataset, save_processed_data, load_processed_data
+from src.train import TrafficSignClassifier
+from src.evaluate import predict_single_image, predict_batch
+
+__version__ = "1.0.0"
 
 __all__ = [
-    'image_pipeline',
-    'load_and_preprocess_dataset',
+    'preprocess_image',
+    'image_pipeline_minimal',
     'feature_extraction',
-    'extract_features_from_images',
-    'train_model',
-    'evaluate_model',
-    'load_config',
-    'save_features',
-    'load_features',
-    'save_model',
-    'load_model',
-    'download_dataset_from_kaggle'
+    'load_and_process_dataset',
+    'save_processed_data',
+    'load_processed_data',
+    'TrafficSignClassifier',
+    'predict_single_image',
+    'predict_batch'
 ]

@@ -1,54 +1,85 @@
 """
-Model evaluation module
+Model evaluation and prediction module
 """
+import cv2
 import numpy as np
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-import matplotlib.pyplot as plt
-import seaborn as sns
+from typing import Union
 
-def evaluate_model(model, scaler, X_test: np.ndarray, y_test: np.ndarray):
+from src.preprocessing import preprocess_image
+from src.features import feature_extraction
+from src.train import TrafficSignClassifier
+
+
+def predict_single_image(
+    image_path: str,
+    classifier: TrafficSignClassifier
+) -> int:
     """
-    Evaluate trained model
+    Predict class for a single image
     
     Args:
-        model: Trained model
-        scaler: Fitted scaler
-        X_test: Test features
-        y_test: Test labels
+        image_path: Path to image file
+        classifier: Trained classifier
         
     Returns:
-        results: Dictionary with evaluation metrics
+        Predicted class ID
     """
-    print("\n" + "="*50)
-    print("EVALUATING MODEL")
-    print("="*50)
+    # Load image
+    image = cv2.imread(image_path)
+    if image is None:
+        raise ValueError(f"Could not load image: {image_path}")
     
-    # Scale test features
-    X_test_scaled = scaler.transform(X_test)
+    # Preprocess
+    processed = preprocess_image(image)
+    
+    # Extract features
+    features = feature_extraction(processed)
+    
+    # Reshape for prediction (model expects 2D array)
+    features = features.reshape(1, -1)
     
     # Predict
-    y_pred = model.predict(X_test_scaled)
+    prediction = classifier.predict(features)[0]
     
-    # Calculate metrics
-    test_acc = accuracy_score(y_test, y_pred)
+    return prediction
+
+
+def predict_batch(
+    image_paths: list,
+    classifier: TrafficSignClassifier
+) -> np.ndarray:
+    """
+    Predict classes for multiple images
     
-    print(f"\nTest Accuracy: {test_acc:.4f}")
-    print("\nClassification Report:")
-    print(classification_report(y_test, y_pred))
+    Args:
+        image_paths: List of image file paths
+        classifier: Trained classifier
+        
+    Returns:
+        Array of predicted class IDs
+    """
+    features_list = []
     
-    # Confusion matrix
-    cm = confusion_matrix(y_test, y_pred)
+    for img_path in image_paths:
+        try:
+            # Load and process
+            image = cv2.imread(img_path)
+            if image is None:
+                continue
+                
+            processed = preprocess_image(image)
+            features = feature_extraction(processed)
+            features_list.append(features)
+            
+        except Exception as e:
+            print(f"Error processing {img_path}: {e}")
+            continue
     
-    plt.figure(figsize=(12, 10))
-    sns.heatmap(cm, annot=False, fmt='d', cmap='Blues')
-    plt.title(f'Confusion Matrix - Accuracy: {test_acc:.4f}')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
-    plt.savefig('confusion_matrix.png', dpi=300, bbox_inches='tight')
-    print("\nConfusion matrix saved as 'confusion_matrix.png'")
+    if len(features_list) == 0:
+        raise ValueError("No images were successfully processed")
     
-    return {
-        'accuracy': test_acc,
-        'predictions': y_pred,
-        'confusion_matrix': cm
-    }
+    # Convert to array and predict
+    features_array = np.array(features_list)
+    predictions = classifier.predict(features_array)
+    
+    return predictions

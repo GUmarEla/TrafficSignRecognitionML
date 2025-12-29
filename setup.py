@@ -1,20 +1,24 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+
+with open("requirements.txt", "r", encoding="utf-8") as fh:
+    requirements = [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+
 setup(
-    name="traffic_sign_recognition",
+    name="gtsrb-traffic-sign-recognition",
     version="1.0.0",
+    author="Your Name",
+    description="German Traffic Sign Recognition using traditional ML features",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=find_packages(),
-    install_requires=[
-        "numpy>=1.21.0",
-        "opencv-python>=4.5.0",
-        "scikit-image>=0.18.0",
-        "scikit-learn>=1.0.0",
-        "pandas>=1.3.0",
-        "matplotlib>=3.4.0",
-        "seaborn>=0.11.0",
-        "tqdm>=4.62.0",
-        "PyYAML>=5.4.0",
-        "opendatasets>=0.1.22",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
+    install_requires=requirements,
 )
