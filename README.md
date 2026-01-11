@@ -132,7 +132,7 @@ Train/0/00001.png,0
 Train/1/00000.png,1
 ```
 
-## 🔧 Configuration
+## Configuration
 
 Modify hyperparameters in `scripts/train_model.py`:
 
