@@ -176,4 +176,4 @@ Contributions welcome! Please open an issue or submit a pull request.
 
 ## 📧 Contact
 
-Your Name - omar.elallam19@gmail.com
+EL ALLAM OMAR - omar.elallam19@gmail.com
