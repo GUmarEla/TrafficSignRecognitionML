@@ -176,6 +176,4 @@ Contributions welcome! Please open an issue or submit a pull request.
 
 ## 📧 Contact
 
-Your Name - your.email@example.com
-
-Project Link: [https://github.com/yourusername/traffic-sign-recognition](https://github.com/yourusername/traffic-sign-recognition)
+Your Name - omar.elallam19@gmail.com
