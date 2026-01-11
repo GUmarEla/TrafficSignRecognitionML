@@ -4,7 +4,7 @@ Traffic sign classification using traditional machine learning with hand-crafted
 
 **Test Accuracy: 93%**
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 TRAFFIC SIGN RECOGNITION/
@@ -27,7 +27,7 @@ TRAFFIC SIGN RECOGNITION/
 └── setup.py                     # Package setup file
 ```
 
-## 🚀 Quick Start (Google Colab)
+## Quick Start (Google Colab)
 
 ### 1. Clone/Upload Project
 
@@ -68,7 +68,7 @@ IMAGE_FOLDER = '/content/gtsrb-german-traffic-sign'
 !python scripts/train_model.py
 ```
 
-## 📊 Features Extracted
+## Features Extracted
 
 The model uses **1,886 hand-crafted features**:
 
@@ -76,14 +76,14 @@ The model uses **1,886 hand-crafted features**:
 2. **LBP Features** (26): Local texture patterns
 3. **Color Histograms** (96): HSV color distribution (32 bins × 3 channels)
 
-## 🎯 Model Architecture
+## Model Architecture
 
 - **Classifier**: Random Forest (200 trees)
 - **Feature Scaling**: StandardScaler
 - **Input**: 64×64 RGB images
 - **Output**: 43 traffic sign classes
 
-## 💻 Usage Examples
+## Usage Examples
 
 ### Train from Scratch
 
@@ -118,7 +118,7 @@ class_id = predict_single_image('path/to/image.jpg', classifier)
 print(f"Predicted class: {class_id}")
 ```
 
-## 📦 Dataset Format
+## Dataset Format
 
 Your CSV should have these columns:
 - `Path`: Relative path to image (e.g., "Train/0/00000.png")
@@ -146,13 +146,13 @@ classifier = TrafficSignClassifier(
 )
 ```
 
-## 📈 Expected Results
+## Expected Results
 
 - **Training Accuracy**: ~98-99%
 - **Test Accuracy**: ~93%
 - **Training Time**: ~5-10 minutes (on Colab with CPU)
 
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### "No images processed" error
 - Check that `Path` column in CSV matches actual file locations
@@ -166,14 +166,14 @@ classifier = TrafficSignClassifier(
 - Ensure all dependencies are installed: `!pip install -r requirements.txt`
 - Make sure you're running from project root directory
 
-## 📝 License
+## License
 
 MIT License
 
-## 🤝 Contributing
+## Contributing
 
 Contributions welcome! Please open an issue or submit a pull request.
 
-## 📧 Contact
+## Contact
 
 EL ALLAM OMAR - omar.elallam19@gmail.com
